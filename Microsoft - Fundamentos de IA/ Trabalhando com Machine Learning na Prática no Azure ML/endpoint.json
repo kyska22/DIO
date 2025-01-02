@@ -1,0 +1,36 @@
+{
+  "endpoints": [
+    {
+      "name": "availability_prediction",
+      "type": "online",
+      "url": "https://<seu-endpoint>.azurewebsites.net/predict",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer <seu-token-de-acesso>"
+      },
+      "description": "Endpoint para prever a disponibilidade de horários com base nos dados fornecidos.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "format": "date", "description": "Data da consulta no formato AAAA-MM-DD." },
+          "time": { "type": "string", "format": "time", "description": "Horário da consulta no formato HH:MM." },
+          "session_type": { 
+            "type": "string", 
+            "enum": ["online", "presencial"], 
+            "description": "Tipo de consulta: online ou presencial." 
+          },
+          "duration": { "type": "integer", "minimum": 10, "description": "Duração da sessão em minutos." }
+        },
+        "required": ["date", "time", "session_type", "duration"]
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "available": { "type": "boolean", "description": "Se o horário está disponível ou não." },
+          "message": { "type": "string", "description": "Mensagem de status ou erro." }
+        }
+      }
+    }
+  ]
+}
+
