@@ -23,36 +23,33 @@ setoolkit
 ```
 Uma vez iniciado, será exibido um menu interativo com várias opções.
 
-![setoolkit](img/setoolkit1.png)
-
-
 ### Passo 3: Escolha do tipo de ataque
 No menu principal do setoolkit, selecione a opção correspondente a **Social-Engineering Attacks** digitando o número correspondente e pressionando **Enter**.
 ```plaintext
 1) Social-Engineering Attacks
 ```
-![setoolkit](img/setoolkit2.png)
+![setoolkit](img/setoolkit1.png)
 
 ### Passo 4: Vetor de ataque
 Escolha a opção **Web Site Attack Vectors**:
 ```plaintext
 2) Web Site Attack Vectors
 ```
-![setoolkit](img/setoolkit3.png)
+![setoolkit](img/setoolkit2.png)
 
 ### Passo 5: Método de ataque
 Selecione o método **Credential Harvester Attack Method**:
 ```plaintext
 3) Credential Harvester Attack Method
 ```
-![setoolkit](img/setoolkit4.png)
+![setoolkit](img/setoolkit3.png)
 
 ### Passo 6: Método de clonagem de site
 Escolha a opção **Site Cloner**, que permite criar uma réplica de um site legítimo:
 ```plaintext
 2) Site Cloner
 ```
-![setoolkit](img/setoolkit5.png)
+![setoolkit](img/setoolkit4.png)
 
 ### Passo 7: Obtendo o endereço IP da máquina
 Para configurar o ataque corretamente, é necessário saber o endereço IP local. Use o comando:
@@ -67,6 +64,8 @@ Insira o URL do site que deseja clonar. Por exemplo, para clonar o Facebook:
 http://www.facebook.com
 ```
 O setoolkit irá processar as informações e configurar um servidor local que hospeda o site clonado.
+
+![setoolkit](img/setoolkit5.png)
 
 ---
 
