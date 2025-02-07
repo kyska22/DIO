@@ -1,4 +1,3 @@
-```markdown
 # Projeto: Testes de Análise de Sentimentos com Language Studio no Azure AI
 
 ## Visão Geral
@@ -102,5 +101,3 @@ Os resultados da análise de sentimentos podem ser utilizados em diversas aplica
 ---
 ## Conclusão
 Com o Azure AI Language e o Language Studio, podemos facilmente realizar análises de sentimentos sem necessidade de conhecimento profundo em aprendizado de máquina. Este guia forneceu os passos básicos para realizar testes e consumir a API para automatização. Agora, você pode expandir este projeto integrando a análise de sentimentos em seus aplicativos e serviços!
-```
-
