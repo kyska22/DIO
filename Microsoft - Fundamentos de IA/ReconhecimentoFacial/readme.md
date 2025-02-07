@@ -1,152 +1,122 @@
+# Projeto de Testes das Ferramentas de Análise de Imagem 4.0 com AI Vision Service no Microsoft Azure
 
-# 🧠 Projeto: Testes com Azure AI Vision Service – Análise de Imagem 4.0
+## Introdução
+Este documento descreve os passos para testar as funcionalidades do AI Vision Service no Microsoft Azure, aplicadas à Análise de Imagem 4.0. O objetivo é validar as capacidades de reconhecimento, classificação e análise avançada de imagens.
 
-## 📌 Objetivo
-Este projeto tem como objetivo realizar testes práticos com o **Azure AI Vision Service**, utilizando a versão **Análise de Imagem 4.0**. O foco principal é explorar as capacidades de análise de imagens, como:  
-- Detecção de objetos  
-- Reconhecimento de texto (OCR)  
-- Descrição automática de imagens  
-- Classificação de conteúdo visual  
+## Pré-requisitos
+Antes de iniciar os testes, certifique-se de ter:
 
----
+- Uma conta ativa no **Microsoft Azure**.
+- O recurso **AI Vision Service** provisionado.
+- Um contêiner **Azure Blob Storage** para armazenar imagens.
+- Azure CLI instalado e configurado.
+- Uma ferramenta de requisição HTTP (Postman, cURL ou similar).
+- Conhecimento básico em Python ou C# para integração via SDK.
 
-## 🔧 Pré-requisitos
-Antes de começar, certifique-se de ter os seguintes recursos configurados:
+## Etapas do Projeto
 
-- Conta ativa no **Microsoft Azure**  
-- Instância do **Azure AI Vision Service** criada  
-- Ferramentas de desenvolvimento instaladas (VS Code, Python ou SDKs relevantes)  
-- Conhecimento básico em **REST APIs** e **SDKs do Azure**  
-- Python 3.x (se optar por testar via scripts)  
+### 1. Configuração do Ambiente
+1. **Criar um grupo de recursos**:
+   ```sh
+   az group create --name MeuGrupoDeRecursos --location eastus
+   ```
+2. **Criar o AI Vision Service**:
+   ```sh
+   az cognitiveservices account create \
+     --name MeuVisionService \
+     --resource-group MeuGrupoDeRecursos \
+     --kind ComputerVision \
+     --sku S1 \
+     --location eastus \
+     --yes
+   ```
+3. **Obter a chave de acesso e o endpoint**:
+   ```sh
+   az cognitiveservices account keys list --name MeuVisionService --resource-group MeuGrupoDeRecursos
+   ```
+   Guarde a chave de acesso e o endpoint para uso posterior.
 
----
+### 2. Upload de Imagens no Azure Blob Storage
+1. Criar um contêiner para armazenar imagens:
+   ```sh
+   az storage container create --name imagens --account-name NomeDaContaStorage
+   ```
+2. Fazer upload de imagens de teste:
+   ```sh
+   az storage blob upload --container-name imagens --file caminho/para/imagem.jpg --name imagem.jpg --account-name NomeDaContaStorage
+   ```
 
-## 📂 Estrutura do Projeto
+### 3. Testando o AI Vision Service
 
-```bash
-.
-├── README.md
-├── requirements.txt    # Dependências do projeto
-└── scripts             # Scripts para testes
-    ├── test_ocr.py     # Script para reconhecimento de texto
-    ├── test_objects.py # Script para detecção de objetos
-    └── test_tags.py    # Script para análise de tags
-```
+#### 3.1 Análise de Imagem (Computer Vision API)
 
----
+1. Fazer uma requisição para análise de imagem:
+   ```sh
+   curl -X POST "https://<ENDPOINT>/vision/v3.2/analyze?visualFeatures=Categories,Description,Color" \
+        -H "Ocp-Apim-Subscription-Key: <CHAVE_DE_ACESSO>" \
+        -H "Content-Type: application/json" \
+        --data "{\"url\": \"https://caminho/para/imagem.jpg\"}"
+   ```
 
-## 🔍 Execução dos Testes
+2. A resposta conterá informações sobre a imagem, incluindo categorias, descrição textual e cores dominantes.
 
-### 3️⃣ Teste de Reconhecimento de Texto (OCR)  
+#### 3.2 Reconhecimento de Texto (OCR)
 
-**Objetivo:** Extrair texto de uma imagem com conteúdo textual.  
-**Exemplo de Entrada:**  
+1. Enviar imagem para OCR:
+   ```sh
+   curl -X POST "https://<ENDPOINT>/vision/v3.2/read/analyze" \
+        -H "Ocp-Apim-Subscription-Key: <CHAVE_DE_ACESSO>" \
+        -H "Content-Type: application/json" \
+        --data "{\"url\": \"https://caminho/para/imagem.jpg\"}"
+   ```
+2. Obter resultado do OCR:
+   ```sh
+   curl -X GET "https://<ENDPOINT>/vision/v3.2/read/analyzeResults/<ID_DA_ANALISE>" \
+        -H "Ocp-Apim-Subscription-Key: <CHAVE_DE_ACESSO>"
+   ```
 
-![Exemplo de entrada para OCR](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Sample-text.png/640px-Sample-text.png)
+#### 3.3 Detecção de Objetos
 
-**Imagem ilustrativa do processo:**  
-![Ilustração do OCR usando Azure AI Vision Service](attachment://An_image_illustrating_OCR_functionality_using_Azur.png)
+1. Fazer uma requisição para detecção de objetos:
+   ```sh
+   curl -X POST "https://<ENDPOINT>/vision/v3.2/detect" \
+        -H "Ocp-Apim-Subscription-Key: <CHAVE_DE_ACESSO>" \
+        -H "Content-Type: application/json" \
+        --data "{\"url\": \"https://caminho/para/imagem.jpg\"}"
+   ```
+2. A resposta conterá uma lista de objetos identificados na imagem.
 
-**Script: `test_ocr.py`**
+### 4. Integração com Aplicativos
+Se desejar integrar as funcionalidades do AI Vision Service com um aplicativo, utilize os SDKs da Microsoft para Python ou C#.
 
+**Exemplo em Python:**
 ```python
-from azure.core.credentials import AzureKeyCredential
-from azure.ai.vision import VisionServiceClient, VisionAnalysisOptions, ImageSource
+from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+from msrest.authentication import CognitiveServicesCredentials
 
-# Configurações do serviço
-endpoint = "https://<seu-endpoint>.cognitiveservices.azure.com/"
-api_key = "<sua-chave-api>"
+# Configuração do cliente
+client = ComputerVisionClient("<ENDPOINT>", CognitiveServicesCredentials("<CHAVE_DE_ACESSO>"))
 
-client = VisionServiceClient(endpoint, AzureKeyCredential(api_key))
+# Analisar uma imagem
+image_url = "https://caminho/para/imagem.jpg"
+analysis = client.analyze_image(image_url, ['Description', 'Tags'])
 
-# Carregar a imagem
-image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Sample-text.png/640px-Sample-text.png"
-source = ImageSource(url=image_url)
-
-# Configurar a análise
-options = VisionAnalysisOptions(features=["read"])
-response = client.analyze_image(source, options)
-
-# Exibir o texto detectado
-for region in response.read_results:
-    for line in region.lines:
-        print("Texto detectado:", line.content)
+# Exibir resultado
+print("Descrição:", analysis.description.captions[0].text)
 ```
 
-**Saída Esperada:**  
-```text
-Texto detectado: The quick brown fox jumps over the lazy dog.
-Texto detectado: 1234567890
-```
+### 5. Avaliação e Ajustes
+Após os testes, avalie a precisão dos resultados e ajuste os parâmetros conforme necessário. Caso os resultados não sejam satisfatórios, considere:
+
+- Melhorar a qualidade das imagens de entrada.
+- Ajustar os modelos de análise no Azure.
+- Utilizar treinamento customizado com **Custom Vision**.
+
+## Conclusão
+Este documento apresenta um roteiro completo para testar e validar as funcionalidades do AI Vision Service no Microsoft Azure. Com esses passos, é possível explorar as capacidades de análise avançada de imagens e integrá-las em soluções inteligentes.
 
 ---
 
-### 4️⃣ Teste de Detecção de Objetos  
-
-**Objetivo:** Detectar e identificar objetos presentes em uma imagem.  
-**Exemplo de Entrada:**  
-
-![Imagem de exemplo para detecção de objetos](https://upload.wikimedia.org/wikipedia/commons/9/9a/Sample_objects.jpg)
-
-**Gráfico representando a saída esperada:**  
-
-![Gráfico de detecção de objetos](attachment://detecao_objetos_grafico.png)
-
-**Script: `test_objects.py`**
-
-```python
-options = VisionAnalysisOptions(features=["detectObjects"])
-response = client.analyze_image(source, options)
-
-for obj in response.detected_objects:
-    print(f"Objeto: {obj.name}, Confiança: {obj.confidence:.2f}")
-```
-
-**Saída Esperada:**  
-```text
-Objeto: Cat, Confiança: 0.95
-Objeto: Cup, Confiança: 0.87
-Objeto: Chair, Confiança: 0.92
-```
-
----
-
-### 5️⃣ Teste de Classificação de Tags  
-
-**Objetivo:** Gerar tags descritivas para uma imagem.  
-**Exemplo de Entrada:**  
-
-![Imagem de exemplo para classificação de tags](https://upload.wikimedia.org/wikipedia/commons/4/47/Nature_image.jpg)
-
-**Script: `test_tags.py`**
-
-```python
-options = VisionAnalysisOptions(features=["describe"])
-response = client.analyze_image(source, options)
-
-for tag in response.description.tags:
-    print("Tag:", tag)
-```
-
-**Saída Esperada:**  
-```text
-Tag: nature
-Tag: forest
-Tag: river
-Tag: tree
-```
-
----
-
-## 📊 Resultados Esperados
-- **OCR**: Texto detectado com precisão.  
-- **Detecção de Objetos**: Lista de objetos encontrados na imagem.  
-- **Classificação de Tags**: Tags representando o conteúdo visual.  
-
----
-
-## 📚 Referências
-- [Documentação do Azure AI Vision](https://learn.microsoft.com/pt-br/azure/ai-services/computer-vision/)  
-- [SDK para Python](https://pypi.org/project/azure-ai-vision/)  
-
----
+**Autor:** Kyska Harrington  
+**Data:** 07/02/2025  
+**Versão:** 1.0
