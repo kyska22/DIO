@@ -1,0 +1,1 @@
+São observados diferentes resultados, alguns inconsistentes, como quando a ferramenta sinaliza edifícios como produtos, o que é interessante, pois esse tipo de teste permite usar a ferramenta de forma mais eficaz e evitar o uso malicioso pelo usuário final.
